@@ -5,8 +5,9 @@ function carregaProdutos()
     .then(data=>{
         if(localStorage.hasOwnProperty("carrinho"))
         {
-JSON.parse(localStorage.getItem("carrinho")).map(element=>{return {id: element.id, available_quantity: element.available_quantity}}).forEach(element=>{
-let i=data.results.findIndex(element2=>element.id==element2.id);
+            JSON.parse(localStorage.getItem("carrinho")).map(element=>{return {id: element.id, available_quantity: element.available_quantity}}).forEach(element=>{
+    let i=data.results.findIndex(element2=>element.id==element2.id);
+    if(i==-1) return;
 if(data.results[i].available_quantity==element.available_quantity)
 {
     data.results.splice(i, 1);
@@ -15,13 +16,12 @@ else
 {
     data.results[i].available_quantity-=element.available_quantity;
 }
-        });
+            });
         }
         let divContainer=document.querySelector(".container");
         data.results.forEach(element=>{
             divContainer.appendChild(montaProduto(element));
-        })
-//alert(window.getComputedStyle(divProduto.querySelector(".card-img-top")).visibility);
+        });
     });
 }
 function addToCart(id, title, thumbnail, price, old_price, botao)
@@ -58,10 +58,8 @@ else
 }
 if(quantidadeInicial-quantidadeAdicionar==0)
 {
-{
     let produtoRemover=botao.closest(".card");
     produtoRemover.parentNode.removeChild(produtoRemover);
-}
 }
 else
 {
@@ -90,6 +88,12 @@ function montaProduto(produto, carrinho=false)
 const divTextos=document.createElement("div");
 divTextos.classList.add("d-flex");
 divTextos.classList.add("justify-content-between");
+{
+    const paragrafoDescricao=document.createElement("p");
+    paragrafoDescricao.classList.add("card-text");
+    obtemDescricao(produto.id, paragrafoDescricao);
+    divTextos.appendChild(paragrafoDescricao);
+}
             {
                 const spanPreco=document.createElement("span");
                 spanPreco.classList.add("font-weight-bold");
@@ -197,3 +201,11 @@ function pedeQuantidade(quantidadeMaxima)
         while(quantidadeRemover<1||quantidadeRemover>quantidadeMaxima);
         return quantidadeRemover;
     }
+    async function obtemDescricao(id, elemento)
+    {
+fetch(`https://api.mercadolibre.com/items/${id}/description`)
+.then(async response=>await response.json())
+.then(data=>{
+    elemento.textContent=!data.hasOwnProperty("status")?data.plain_text:"Não foi possível obter a descrição deste item";
+});
+}
