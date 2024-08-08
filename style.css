@@ -1,0 +1,60 @@
+:root
+{
+    --azul-escuro:#264770);
+    --cinza-escuro:#343A40;
+}
+header
+{
+    height:70px;
+    display:flex;
+    flex-direction:column;
+}
+h1
+{
+    font-family:'Roboto', sans-serif;
+    font-size:28px;
+}
+.navegacao__itens
+{
+    display:flex;
+    gap:20px;
+}
+.navegacao__itens__item
+{
+    color:#fff;
+    font-family:'Roboto', sans-serif;
+    text-decoration:none;
+}
+.navegacao__itens__item:hover
+{
+    text-decoration:underline;
+}
+.container
+{
+    gap:20px;
+}
+.card
+{
+    width:100%;
+    background-color:#FFF;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.card>img
+{
+    width:100%;
+}
+.card span, .card h5, .card p
+{
+    padding:20px;
+}
+.card h5
+{
+    font-family:'Roboto', sans-serif;
+    font-size:18px;
+    color:var(cinza-escuro);
+}
+footer
+{
+    height:80px;
+    background-color:var(cinza-escuro);
+}

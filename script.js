@@ -1,3 +1,13 @@
+document.addEventListener("DOMContentLoaded", ()=>{
+    let caminhoAtual=window.location.pathname.split('/').pop();
+    let links=document.querySelectorAll("nav>ul>li>a");
+    links.forEach(element=>{
+        if(element.getAttribute("href").split('/').pop()===caminhoAtual)
+        {
+            element.setAttribute("aria-current", "page");
+        }
+    })
+})
 function carregaProdutos()
 {
     fetch("https://api.mercadolibre.com/sites/MLB/search?q=notebooks")
@@ -18,9 +28,9 @@ else
 }
             });
         }
-        let divContainer=document.querySelector(".container");
+        let divRow=document.querySelector(".row");
         data.results.forEach(element=>{
-            divContainer.appendChild(montaProduto(element));
+            divRow.appendChild(montaProduto(element));
         });
     });
 }
@@ -68,8 +78,13 @@ elementoQuantidade.textContent=quantidadeInicial-quantidadeAdicionar;
 }
 function montaProduto(produto, carrinho=false)
 {
+    const divCol=document.createElement("div");
+    divCol.classList.add("col-md-4");
+    divCol.classList.add("col-sm-6");
+    divCol.classList.add("mb-4");
+    {
             const divProduto=document.createElement("div");
-            divProduto.classList.add("card")
+            divProduto.classList.add("card");
             const imagemProduto=document.createElement("img");
             imagemProduto.setAttribute("src", produto.thumbnail);
             imagemProduto.setAttribute("alt", "Imagem do produto");
@@ -140,23 +155,28 @@ divTextos.classList.add("justify-content-between");
                 botaoAcao.textContent="Remover do carrinho";
                 botaoAcao.addEventListener("click", ()=>{
                     removeFromCart(produto.id);
-                })
+                });
             }
-                divRodape.appendChild(botaoAcao);
-            }
-            divProduto.appendChild(divRodape);
+            divRodape.appendChild(botaoAcao);
         }
+            divProduto.appendChild(divRodape);
+    }
+    {
         const spanId=document.createElement("span");
         spanId.style.display="none";
         spanId.textContent=produto.id;
         divProduto.appendChild(spanId);
-return divProduto;
+    }
+        divCol.appendChild(divProduto);
+    }
+return divCol;
 }
 function carregaItensCarrinho()
 {
     const containerItens=document.getElementById("lista_produtos");
-    if(!localStorage.hasOwnProperty("carrinho"))
-    {
+    if(!localStorage.hasOwnProperty("carrinho")||JSON.parse(localStorage.getItem("carrinho")).length===0)
+        {
+            document.getElementById("botaoFinalizarCompra").setAttribute("disabled", true);
         const cabecalhoCarrinhoVazio=document.createElement("h3");
         cabecalhoCarrinhoVazio.textContent="Carrinho vazio!";
         containerItens.appendChild(cabecalhoCarrinhoVazio);
@@ -165,6 +185,9 @@ function carregaItensCarrinho()
     JSON.parse(localStorage.getItem("carrinho")).forEach(element=>{
 containerItens.appendChild(montaProduto(element, true));
     });
+    document.getElementById("botaoFinalizarCompra").addEventListener("click", ()=>{
+        finalizaCompra();
+    })
 }
 function removeFromCart(id)
 {
@@ -208,4 +231,11 @@ fetch(`https://api.mercadolibre.com/items/${id}/description`)
 .then(data=>{
     elemento.textContent=!data.hasOwnProperty("status")?data.plain_text:"Não foi possível obter a descrição deste item";
 });
+}
+function finalizaCompra()
+{
+alert("Compra finalizada. Os itens do carrinho foram comprados.");    
+localStorage.removeItem("carrinho");
+document.querySelector(".row").innerHTML="<h3>Carrinho vazio!</h3>";
+document.getElementById("botaoFinalizarCompra").setAttribute("disabled", true);
 }
