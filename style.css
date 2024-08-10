@@ -58,3 +58,9 @@ footer
     height:80px;
     background-color:var(cinza-escuro);
 }
+footer>h3, footer>ol>li, footer>p
+{
+    font-family: 'Roboto', sans-serif;
+    color:#FFF;
+    text-align: center;
+}
